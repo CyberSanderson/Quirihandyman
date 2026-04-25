@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { 
   Wrench, 
   Zap, 
@@ -9,8 +10,7 @@ import {
   X, 
   Phone, 
   Mail, 
-  Globe, 
-  MapPin
+  Globe
 } from 'lucide-react';
 
 type Language = 'en' | 'es';
@@ -41,11 +41,16 @@ const content = {
       title: 'Contact Information',
       name: 'Name',
       email: 'Email',
+      timeline: 'Preferred Timeline',
+      urgent: 'Urgent (ASAP)',
+      thisWeek: 'Sometime this week',
+      flexible: 'Flexible / No rush',
+      upload: 'Upload a Photo (Optional)',
       message: 'How can we help you?',
       phoneLabel: 'Call Us Directly',
       emailLabel: 'Send an Email',
       phone: '347-472-6966',
-      mail: 'office@quirinohandyman.nyc'
+      mail: 'santosmisales32@gmail.com'
     },
     footer: '© 2026 Quirino Handyman. New York, NY. All rights reserved.'
   },
@@ -74,11 +79,16 @@ const content = {
       title: 'Información de Contacto',
       name: 'Nombre',
       email: 'Correo',
+      timeline: 'Tiempo Preferido',
+      urgent: 'Urgente (Lo antes posible)',
+      thisWeek: 'Esta semana',
+      flexible: 'Flexible / Sin prisa',
+      upload: 'Subir una Foto (Opcional)',
       message: '¿Cómo podemos ayudarle?',
       phoneLabel: 'Llámenos',
       emailLabel: 'Envíenos un Correo',
       phone: '347-472-6966',
-      mail: 'office@quirinohandyman.nyc'
+      mail: 'santosmisales32@gmail.com'
     },
     footer: '© 2026 Quirino Handyman. New York, NY. Todos los derechos reservados.'
   }
@@ -188,19 +198,18 @@ export default function App() {
                   <div key={service.id} className="bg-white p-5 rounded-xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] text-center flex flex-col items-center justify-center hover:-translate-y-1 transition-transform border border-slate-50">
                      {iconMap[service.icon as keyof typeof iconMap]}
                      <h3 className="font-bold text-sm text-slate-800 mt-2 tracking-wide">{service.title}</h3>
-                     {/* Keep description but smaller & slightly hidden on small mobile to fit 2-col comfortably */}
                      <p className="text-xs text-slate-500 line-clamp-3 mt-2 hidden md:block">{service.desc}</p>
                   </div>
                ))}
              </div>
              
-             {/* About & Contact Side-by-Side (Theme layout pattern) */}
+             {/* About & Contact Side-by-Side */}
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-16 lg:mt-24">
                 <div id="about">
                   <h3 className="font-bold text-xl lg:text-2xl text-blue-900 mb-3">{t.about.title}</h3>
                   <p className="text-sm text-slate-600 leading-relaxed mb-10 tracking-wide">{t.about.text}</p>
                   
-                  <h4 id="contact" className="font-bold text-lg text-blue-900 mb-4">{t.contact.title}</h4>
+                  <h4 className="font-bold text-lg text-blue-900 mb-4">{t.contact.title}</h4>
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-slate-100 transition-colors hover:border-blue-200">
                       <div className="w-10 h-10 bg-sky-50 rounded-full flex items-center justify-center shrink-0">
@@ -217,17 +226,22 @@ export default function App() {
                       </div>
                       <div>
                         <div className="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-widest">{t.contact.emailLabel}</div>
-                        <a href="mailto:santosmisales32@gmail.com" className="font-bold text-blue-900 hover:text-blue-700">{t.contact.mail}</a>
+                        <a href={`mailto:${t.contact.mail}`} className="font-bold text-blue-900 hover:text-blue-700">{t.contact.mail}</a>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white p-6 lg:p-8 rounded-xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] border border-slate-100 h-fit mt-2 lg:mt-0">
+                <div id="contact" className="bg-white p-6 lg:p-8 rounded-xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] border border-slate-100 h-fit mt-2 lg:mt-0">
                   <h4 className="font-bold text-lg text-blue-900 mb-4 tracking-wide">{t.contact.message}</h4>
-                  <form className="space-y-4" action="https://formsubmit.co/santosmisales32@gmail.com" method="POST">
+                  
+                  {/* UPDATED FORM: Added encType for files */}
+                  <form className="space-y-4" action={`https://formsubmit.co/${t.contact.mail}`} method="POST" encType="multipart/form-data">
                     <input type="hidden" name="_subject" value="New Service Request from Quirino Handyman Website" />
                     <input type="hidden" name="_template" value="table" />
+                    
+                    {/* Anti-spam honeypot */}
+                    <input type="text" name="_honey" style={{ display: 'none' }} />
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <input 
@@ -245,13 +259,38 @@ export default function App() {
                         required 
                       />
                     </div>
+
+                    {/* NEW: Timeline Dropdown */}
+                    <select 
+                      name="timeline" 
+                      className="text-xs sm:text-sm p-3 border border-slate-200 rounded-md w-full focus:ring-2 focus:ring-blue-600 focus:border-transparent focus:outline-none transition-shadow bg-white" 
+                      required
+                    >
+                      <option value="">{t.contact.timeline}...</option>
+                      <option value="urgent">{t.contact.urgent}</option>
+                      <option value="this-week">{t.contact.thisWeek}</option>
+                      <option value="flexible">{t.contact.flexible}</option>
+                    </select>
+
                     <textarea 
                       name="message"
                       placeholder={t.contact.message} 
-                      rows={5} 
+                      rows={4} 
                       className="text-xs sm:text-sm p-3 border border-slate-200 rounded-md w-full focus:ring-2 focus:ring-blue-600 focus:border-transparent focus:outline-none resize-none transition-shadow" 
                       required
                     ></textarea>
+
+                    {/* NEW: File Upload */}
+                    <div>
+                      <label className="text-xs font-bold text-slate-500 mb-1 block">{t.contact.upload}</label>
+                      <input 
+                        type="file" 
+                        name="attachment" 
+                        accept="image/*"
+                        className="text-xs sm:text-sm w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors cursor-pointer"
+                      />
+                    </div>
+
                     <button 
                       type="submit" 
                       className="bg-blue-600 hover:bg-blue-700 w-full py-3 mt-2 rounded-md text-sm font-bold text-white uppercase tracking-wide transition-colors shadow-md"
@@ -272,14 +311,10 @@ export default function App() {
            <span className="hidden sm:inline">{t.contact.mail}</span>
         </div>
         <div className="text-center">{t.footer}</div>
-        <div className="flex gap-4 font-medium tracking-wide">
-           <a href="#" className="hover:text-white transition-colors">FB</a>
-           <a href="#" className="hover:text-white transition-colors">IG</a>
-           <a href="#" className="hover:text-white transition-colors">TW</a>
-        </div>
+        
       </footer>
 
-      {/* Sticky Bottom Calling Button (Theme UI Pattern) */}
+      {/* Sticky Bottom Calling Button */}
       <a 
         href={`tel:${t.contact.phone.replace(/[^0-9]/g, '')}`} 
         className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 bg-green-500 text-white font-bold px-5 sm:px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-2 hover:bg-green-600 transition-transform hover:-translate-y-1"
